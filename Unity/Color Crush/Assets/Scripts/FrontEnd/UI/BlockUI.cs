@@ -1,19 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BlockUI : MonoBehaviour
 {
-    private float blockOffset = 100;
+    protected Sprite sprite; // set this in the future by loading enumType from Resources/Sprites/...
+    
+    protected Image image;
 
-    private Sprite sprite; // set this in the future by loading enumType from Resources/Sprites/...
+    protected Block block;
 
-    public BlockUI(Block block) {
-        GameObject column = GameObject.Find("Column_" + block.X);
-        GameObject blockPrefab = Resources.Load("Block") as GameObject;
+    public virtual void Initialize(Block block, string spriteType) {
+        this.block = block;
+        image = gameObject.GetComponent<Image>();
+        
+        LoadSprites(spriteType);
+        image.overrideSprite = sprite;
+    }
 
-        GameObject instance = Instantiate(blockPrefab, new Vector3(0, block.Y * blockOffset, 0), blockPrefab.transform.rotation) as GameObject;
-		instance.transform.SetParent(column.transform, false);
-		instance.name = string.Format("{0}{1}", block.X, block.Y);
+    protected virtual void LoadSprites(string spriteType){
+        sprite = Resources.Load<Sprite>("Sprites/Blocks/Regular/" + spriteType);
+    }
+
+    public Block GetBlock(){
+        return block;
     }
 }

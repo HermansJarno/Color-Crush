@@ -1,19 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-
-public abstract class Block 
+public class Block
 {
-    private int x;
-    private int y;
-    private BlockType blockType;
-    private BlockUI blockUI;
+    protected int x;
+    protected int y;
+    protected BlockType blockType;
+    protected BlockUI blockUI;
+    protected float blockOffset = 100;
 
-    public Block(int X, int Y, BlockType type){
-        x = X;
-        y = Y;
+    public Block(int x, int y, BlockType type){
+        this.x = x;
+        this.y = y;
         blockType = type;
-        blockUI = new BlockUI(this);
+    }
+
+    public virtual void CreateUI(){
+        GameObject column = GameObject.Find("Column_" + x);
+        GameObject blockPrefab = Resources.Load("Block") as GameObject;
+
+        GameObject instance = MonoBehaviour.Instantiate(blockPrefab, new Vector3(0, y * blockOffset, 0), blockPrefab.transform.rotation) as GameObject;
+		instance.transform.SetParent(column.transform, false);
+		instance.name = string.Format("{0}{1}", x, y);
+
+        blockUI = instance.GetComponent<BlockUI>();
+        blockUI.Initialize(this, blockType.ToString());
+    }
+
+    public bool Equals(Block block)
+    {
+        if (block == null || blockType != block.BlockType)
+        {
+            return false;
+        } else {
+            return block.X == x && block.Y == y;
+        }
     }
 
     public int Y
@@ -31,4 +53,5 @@ public abstract class Block
     public BlockType BlockType{
         get { return blockType; }
     }
+
 }
