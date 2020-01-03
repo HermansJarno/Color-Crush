@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BlockUI : MonoBehaviour
+public abstract class BlockUI : MonoBehaviour
 {
     protected Sprite sprite; // set this in the future by loading enumType from Resources/Sprites/...
     
@@ -17,6 +17,12 @@ public class BlockUI : MonoBehaviour
         
         LoadSprites(spriteType);
         image.overrideSprite = sprite;
+    }
+
+    public abstract void MoveToIndex(int x, int y);
+
+    public void DeleteMyself(){
+        GameObject.Destroy(this.gameObject);
     }
 
     protected virtual void LoadSprites(string spriteType){

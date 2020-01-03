@@ -10,8 +10,12 @@ public class ColorBlockUI : BlockUI
 
     private new ColorBlock block;
 
+    [SerializeField]
+    private ColorType colorType;
+
     public void Initialize(ColorBlock block, string spriteType) {
         this.block = block;
+        colorType = block.ColorType;
         image = gameObject.GetComponent<Image>();
         
         LoadSprites(spriteType);
@@ -30,6 +34,18 @@ public class ColorBlockUI : BlockUI
         }else{
             image.overrideSprite = sprite;
         }
+    }
+
+    public override void MoveToIndex(int x, int y){
+        //MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
+        //moveBlock.BeginLerp();
+        GameObject column = GameObject.Find("Column_" + x);
+
+        transform.SetParent(column.transform, false);
+
+		gameObject.name = string.Format("{0}{1}", x, y);
+
+        transform.localPosition = new Vector3(0, block.BlockOffset * y, 0);
     }
 
     public new ColorBlock GetBlock(){

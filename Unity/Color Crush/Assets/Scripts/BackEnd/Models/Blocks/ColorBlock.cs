@@ -5,7 +5,6 @@ using UnityEngine;
 public class ColorBlock : Block
 {
     private bool selected = false;
-    private ColorType colorType;
     
     private new ColorBlockUI blockUI;
 
@@ -14,8 +13,9 @@ public class ColorBlock : Block
         CreateUI();
     }
 
-    public ColorType ColorType{
-        get { return colorType; }
+    public ColorBlock(int x, int y) : base (x, y, BlockType.Color){
+        colorType = (ColorType)Random.Range(1,7);
+        CreateUI();
     }
 
     public bool Equals(ColorBlock block)
@@ -42,6 +42,16 @@ public class ColorBlock : Block
 
         blockUI = instance.GetComponent<ColorBlockUI>();
         blockUI.Initialize(this, colorType.ToString());
+    }
+
+    public override void DeleteMyself(){
+        blockUI.DeleteMyself();
+    }
+
+    public override void MoveToIndex(int x, int y){
+        blockUI.MoveToIndex(x, y);
+        X = x;
+        Y = y;
     }
 
     public void ToggleSelected(){

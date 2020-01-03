@@ -10,14 +10,14 @@ public class GridUI : MonoBehaviour
 
     private float yOffset = 50;
 
-    private float xOffset = 100;
+    private float xOffset = 85; //85 percent of the width of a block
 
     public void Initialize (Grid grid){
         columnPrefab = Resources.Load("Column") as GameObject;
         root = this.gameObject;
 
         float gridXOffset = -((xOffset * (grid.XLength - 1)) / 2);
-        float gridYOffset = -((100 * (grid.YLength - 1)) / 2);
+        float gridYOffset = -((xOffset * (grid.YLength - 1)) / 2);
 
         root.transform.localPosition = new Vector3(gridXOffset, gridYOffset, 0);
 

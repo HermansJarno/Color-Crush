@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Block
+public abstract class Block
 {
     protected int x;
     protected int y;
     protected BlockType blockType;
+    protected ColorType colorType;
     protected BlockUI blockUI;
     protected float blockOffset = 100;
 
@@ -16,17 +17,8 @@ public class Block
         blockType = type;
     }
 
-    public virtual void CreateUI(){
-        GameObject column = GameObject.Find("Column_" + x);
-        GameObject blockPrefab = Resources.Load("Block") as GameObject;
-
-        GameObject instance = MonoBehaviour.Instantiate(blockPrefab, new Vector3(0, y * blockOffset, 0), blockPrefab.transform.rotation) as GameObject;
-		instance.transform.SetParent(column.transform, false);
-		instance.name = string.Format("{0}{1}", x, y);
-
-        blockUI = instance.GetComponent<BlockUI>();
-        blockUI.Initialize(this, blockType.ToString());
-    }
+    public abstract void CreateUI();
+    public abstract void DeleteMyself();
 
     public bool Equals(Block block)
     {
@@ -36,6 +28,37 @@ public class Block
         } else {
             return block.X == x && block.Y == y;
         }
+    }
+
+    public bool Touches(Block block){
+        if(block == null){
+            return false;
+        }
+        else if (((block.X + 1 == x) || (block.X - 1 == x) || (block.X == x)))
+		{
+			if (((block.Y + 1 == y) || (block.Y - 1 == y) || (block.Y == y)))
+			{
+				return true;
+			}
+		}
+        return false;
+    }
+
+    public virtual void MoveToIndex(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public bool Moveable(){
+        return blockType != BlockType.Ice;
+    }
+
+    public bool Selectable(){
+        return blockType == BlockType.Color;
+    }
+
+    public bool Breakable(){
+        return blockType == BlockType.Lava || blockType == BlockType.Ice;
     }
 
     public int Y
@@ -50,8 +73,22 @@ public class Block
         set { x = value; }
     }
 
+    public float BlockOffset {
+        get { return blockOffset; }
+    }
+
     public BlockType BlockType{
         get { return blockType; }
+    }
+
+    public ColorType ColorType{
+        get { return colorType; }
+    }
+
+    public string Name {
+        get {
+            return x + "-" + y;
+        }
     }
 
 }
