@@ -6,10 +6,12 @@ using UnityEngine.EventSystems;
 
 public class TouchController : MonoBehaviour
 {
+	LineRenderController lineRenderController;
 	GridController gridController;
 	GraphicRaycaster raycaster;
 
 	private void Start() {
+		lineRenderController = FindObjectOfType<LineRenderController>();
 		gridController = FindObjectOfType<GridController>();
 		raycaster = FindObjectOfType<GraphicRaycaster>();
 	}
@@ -36,6 +38,10 @@ public class TouchController : MonoBehaviour
 			if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
 			{
 				gridController.SubmitSelection();
+			}
+
+			if (Input.touchCount > 0){
+				lineRenderController.UpdatePoints(gridController.GetSelectedBlocks(), Input.GetTouch(0).position);
 			}
         }
     }

@@ -11,6 +11,7 @@ public class Grid
     private int[] xOffsets = { -1, 1, 0, 0, -1, 1 };
     private int[] yEvenOffsets = { 0, 0, -1, 1, -1, -1 };
     private int[] yOddOffsets = { 0, 0, -1, 1, 1, 1};
+	private List<Block> recentDestroyedLavaBlocks;
 
     public void Initialize(int xLength, int yLength){
         this.xLength = xLength;
@@ -23,21 +24,28 @@ public class Grid
         {
             for (int y = 0; y < yLength; y++)
             {
-                if(Random.Range(1,3) == 2){
+				int rnd = Random.Range(0,4);
+                if(rnd == 2){
                     blocks[x,y] = new LavaBlock(x,y);
+                }else if(rnd == 3){
+					blocks[x,y] = new IceBlock(x,y);
                 }else{
-                    blocks[x,y] = new ColorBlock(x,y, (ColorType)Random.Range(1,7));
-                }
+					blocks[x,y] = new ColorBlock(x,y, (ColorType)Random.Range(1,7));
+				}
             }
         }
     }
 
     public void DeleteBlocks(Block[] blocksToDelete){
+		recentDestroyedLavaBlocks = new List<Block>();
         for (int i = 0; i < blocksToDelete.Length; i++)
         {
             DestroyNearBlocks(blocksToDelete[i]);
-            blocks[blocksToDelete[i].X, blocksToDelete[i].Y] = null;
-            blocksToDelete[i].DeleteMyself();
+			blocksToDelete[i].LowerLifes();
+			if(blocksToDelete[i].NoLifesLeft()){
+				blocks[blocksToDelete[i].X, blocksToDelete[i].Y].DeleteMyself();
+				blocks[blocksToDelete[i].X, blocksToDelete[i].Y] = null;
+			}
         }
         UpdateGrid();
     }
@@ -58,8 +66,9 @@ public class Grid
                 }
             }
         }
-        if(!checkIfMovesLeftInGrid()){
-           	if(checkForPotentialMoveCombination()){
+		UpdateLavaBlocks();
+        if(!CheckIfMovesLeftInGrid()){
+           	if(CheckForPotentialMoveCombination()){
 				Shuffle();
 			} else {
 				Debug.Log("Doomed");
@@ -93,7 +102,7 @@ public class Grid
 		}
 	}
 
-	bool checkForPotentialMoveCombination(){
+	private bool CheckForPotentialMoveCombination(){
 		int yellowCount = GetNumberOfBlocksOfColorType(ColorType.Yellow);
 		int redCount = GetNumberOfBlocksOfColorType(ColorType.Red);
 		int blueCount = GetNumberOfBlocksOfColorType(ColorType.Blue);
@@ -104,14 +113,14 @@ public class Grid
 		return yellowCount > 1 || redCount > 1 || blueCount > 1 || greenCount > 1 || cyanCount > 1 || magentaCount > 1;
 	}
 
-    bool checkIfMovesLeftInGrid(){
+   	private bool CheckIfMovesLeftInGrid(){
 		bool movesLeftInGrid = false;
 
 		for (int x = 0; x < xLength; x++)
 		{
 			for (int y = 0; y < yLength; y++)
 			{
-				if(blocks[x,y] != null && blocks[x,y].Selectable() && checkIfMovesAroundIndex(blocks[x,y])){
+				if(blocks[x,y] != null && blocks[x,y].Selectable() && CheckIfMovesAroundIndex(blocks[x,y])){
 					movesLeftInGrid = true;
 					break;
 				}
@@ -123,35 +132,36 @@ public class Grid
 		return movesLeftInGrid;
 	}
 
-    private bool checkIfMovesAroundIndex(Block currentBlock){
+    private bool CheckIfMovesAroundIndex(Block currentBlock){
 		bool optionalMovesLeft = false;
 
 		if ((currentBlock.X % 2) == 0) {
-			optionalMovesLeft = checkForOptionalMoves(currentBlock, xOffsets, yEvenOffsets);
+			optionalMovesLeft = CheckForOptionalMoves(currentBlock, xOffsets, yEvenOffsets);
 		} else {
-			optionalMovesLeft = checkForOptionalMoves(currentBlock, xOffsets, yOddOffsets);
+			optionalMovesLeft = CheckForOptionalMoves(currentBlock, xOffsets, yOddOffsets);
 		}
 		return optionalMovesLeft;
 	}
 
-    private bool checkForOptionalMoves(Block currentBlock, int[] xOffsets, int[] yOffsets){
+    private bool CheckForOptionalMoves(Block currentBlock, int[] xOffsets, int[] yOffsets){
         bool optionalMovesLeft = false;
 		for (int i = 0; i < xOffsets.Length; i++)
 		{
-			if (checkIfIndexIsInTheGrid(currentBlock.X + xOffsets[i], currentBlock.Y + yOffsets[i])
-			&& (blocks[currentBlock.X + xOffsets[i], currentBlock.Y + yOffsets[i]] != null && 
-            blocks[currentBlock.X + xOffsets[i], currentBlock.Y + yOffsets[i]].ColorType == currentBlock.ColorType))
-			{
-				optionalMovesLeft = true;
+			if (CheckIfIndexIsInTheGrid(currentBlock.X + xOffsets[i], currentBlock.Y + yOffsets[i])){
+				int x = currentBlock.X + xOffsets[i];
+				int y = currentBlock.Y + yOffsets[i];
+				if(blocks[x, y] != null && blocks[x, y].EqualsColorType(currentBlock)) optionalMovesLeft = true;
+			}
+			if(optionalMovesLeft){
 				break;
 			}
 		}
         return optionalMovesLeft;
     }
 
-    private bool checkIfIndexIsInTheGrid(int x, int y){
+    private bool CheckIfIndexIsInTheGrid(int x, int y){
 		bool isInTheGrid = false;
-		if (xLength - 1 > x && yLength - 1 > y)
+		if (xLength > x && yLength > y)
 		{
 			isInTheGrid |= ((0 <= x) && (0 <= y));
 		}
@@ -161,24 +171,50 @@ public class Grid
     private void DestroyNearBlocks(Block block)
 	{
 		if ((block.X % 2) == 0) {
-            checkForBreakableBlocks(block, xOffsets, yEvenOffsets);
+            CheckForBreakableBlocks(block, xOffsets, yEvenOffsets);
 		} else {
-			checkForBreakableBlocks(block, xOffsets, yOddOffsets);
+			CheckForBreakableBlocks(block, xOffsets, yOddOffsets);
 		}
 	}
 
-    private void checkForBreakableBlocks(Block block, int[] xOffsets, int[] yOffsets){
-        Debug.Log("lets check");
+    private void CheckForBreakableBlocks(Block block, int[] xOffsets, int[] yOffsets){
 		for (int i = 0; i < xOffsets.Length; i++)
 		{
-			if (checkIfIndexIsInTheGrid(block.X + xOffsets[i], block.Y + yOffsets[i])
-			&& blocks[block.X + xOffsets[i], block.Y + yOffsets[i]] != null && blocks[block.X + xOffsets[i], block.Y + yOffsets[i]].Breakable())
+			int x = block.X + xOffsets[i];
+			int y = block.Y + yOffsets[i];
+			if (CheckIfIndexIsInTheGrid(x,y) && blocks[x, y] != null && blocks[x, y].Breakable())
 			{
-				blocks[block.X + xOffsets[i], block.Y + yOffsets[i]].DeleteMyself();
-                blocks[block.X + xOffsets[i], block.Y + yOffsets[i]] = null;
+				if(blocks[x, y].BlockType == BlockType.Lava){
+					recentDestroyedLavaBlocks.Add(blocks[x, y]);
+				}
+
+				blocks[x, y].LowerLifes();
+				if(blocks[x, y].NoLifesLeft()){
+					blocks[x, y].DeleteMyself();
+                	blocks[x, y] = null;
+				}
 			}
 		}
     }
+
+	public List<Block> GetListOfBlocksWithBlockTypeAroundBlock(Block block, BlockType blockType){
+		List<Block> filteredBlocks = new List<Block>();
+		int[] yOffsets = GetYOffset(block);
+		for (int i = 0; i < xOffsets.Length; i++)
+		{
+			if (CheckIfIndexIsInTheGrid(block.X + xOffsets[i], block.Y + yOffsets[i])){
+				Block tempBlock = blocks[block.X + xOffsets[i], block.Y + yOffsets[i]];
+				if(tempBlock != null && tempBlock.BlockType == blockType){
+					filteredBlocks.Add(tempBlock);
+				} 
+			}
+		}
+		return filteredBlocks;
+	}
+
+	private int[] GetYOffset(Block block){
+		return block.X % 2 == 0 ? yEvenOffsets : yOddOffsets;
+	}
 
     private void Shuffle()
 	{
@@ -186,16 +222,18 @@ public class Grid
         for (int x = 0; x < xLength; x++) {
 			for (int y = 0; y < yLength; y++)
 			{
-				if (blocks[x,y].Selectable()) {
+				if (blocks[x,y] != null && blocks[x,y].Selectable()) {
 					Block block = SearchSelectableBlock(x, y);
-					Debug.Log(block.BlockType);
-					Debug.Log("Shuffling: " + x + "-" + y + "&" + block.X + "-" + block.Y);
-					Swap(blocks[x,y], block);
+					if(block != null && block.Selectable()){
+						Debug.Log(block.BlockType);
+						Debug.Log("Shuffling: " + x + "-" + y + "&" + block.X + "-" + block.Y);
+						Swap(blocks[x,y], block);
+					} 
 				}
 			}
 		}
 
-        if(checkIfMovesLeftInGrid()){
+        if(CheckIfMovesLeftInGrid()){
 			//Invoke("SetInputActive", 1f);
 		}else{
 			Debug.Log("Reshuffle");
@@ -209,7 +247,7 @@ public class Grid
 		do{
 			newX = Random.Range(0, xLength);
 			newY = Random.Range(0, yLength);
-		}while(newX == x && newY == y && !blocks[newX,newY].Selectable());
+		}while(blocks[newX,newY] == null && newX == x && newY == y && !blocks[newX,newY].Selectable());
 		return blocks[newX,newY];
 	}
 
@@ -229,10 +267,18 @@ public class Grid
 		for (int x = 0; x < xLength; x++) {
 			for (int y = 0; y < yLength; y++)
 			{
-				if(blocks[x,y].BlockType == blockType) count++;
+				if(BlockEqualsBlockType(blocks[x,y], blockType)) count++;
 			}
 		}
 		return count;
+	}
+
+	private bool BlockEqualsBlockType(Block block, BlockType blockType){
+		return block != null && block.BlockType == blockType;
+	}
+
+	private bool BlockEqualsColorType(Block block, ColorType colorType){
+		return block != null && block.ColorType == colorType;
 	}
 
 	private int GetNumberOfBlocksOfColorType(ColorType colorType){
@@ -240,10 +286,42 @@ public class Grid
 		for (int x = 0; x < xLength; x++) {
 			for (int y = 0; y < yLength; y++)
 			{
-				if(blocks[x,y].ColorType == colorType) count++;
+				if(BlockEqualsColorType(blocks[x,y], colorType)) count++;
 			}
 		}
 		return count;
+	}
+
+	private void UpdateLavaBlocks(){
+		if(GetNumberOfBlocksOfType(BlockType.Color) > 0){
+			List<Block> list = GetListOfBlocksOfType(BlockType.Lava);
+			bool blockAffectedByLava = false;
+			if(list.Count > 0){
+				do{
+					int randomIndex = Random.Range(0, list.Count);
+					blockAffectedByLava = blocks[list[randomIndex].X, list[randomIndex].Y].AffectBlock();
+					if(!blockAffectedByLava) list.RemoveAt(randomIndex);
+					Debug.Log(list.Count);
+				} while(!blockAffectedByLava && list.Count > 0);
+			}
+		}
+	}
+
+	private List<Block> GetListOfBlocksOfType(BlockType blockType){
+		List<Block> list = new List<Block>();
+		for (int x = 0; x < xLength; x++) {
+			for (int y = 0; y < yLength; y++)
+			{
+				if(BlockEqualsBlockType(blocks[x,y], blockType)) list.Add(blocks[x,y]);
+			}
+		}
+		return list;
+	}
+
+	public List<Block> RecentDestroyedLavaBlocks{
+		get{
+			return recentDestroyedLavaBlocks;
+		}
 	}
 
     public int XLength 

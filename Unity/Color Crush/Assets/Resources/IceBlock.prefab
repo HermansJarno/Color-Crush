@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3754580526268607754}
   - component: {fileID: 3754580526268607860}
-  - component: {fileID: -7446315304034910783}
-  - component: {fileID: 7696636322417293837}
-  - component: {fileID: 6528992873464211355}
+  - component: {fileID: 3682912366635996507}
+  - component: {fileID: 516818852090821546}
+  - component: {fileID: 8419115598145507053}
   m_Layer: 0
-  m_Name: ColorBlock
+  m_Name: IceBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,21 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3754580526268607753}
   m_CullTransparentMesh: 0
---- !u!114 &-7446315304034910783
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3754580526268607753}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04d27e9977bbedb4f9936c38a2b20d53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selected: 0
-  colorType: 0
---- !u!114 &7696636322417293837
+--- !u!114 &3682912366635996507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 10447f6263394844c829205b6d784efc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -89,7 +75,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6528992873464211355
+--- !u!114 &516818852090821546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3754580526268607753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c9bc686ff1bfab4cbc54e5d7ea8d7d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8419115598145507053
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

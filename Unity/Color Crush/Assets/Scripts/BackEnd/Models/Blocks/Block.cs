@@ -10,6 +10,8 @@ public abstract class Block
     protected ColorType colorType;
     protected BlockUI blockUI;
     protected float blockOffset = 100;
+    protected int lifes = 1;
+    protected GameObject linkedUIGameObject;
 
     public Block(int x, int y, BlockType type){
         this.x = x;
@@ -17,12 +19,29 @@ public abstract class Block
         blockType = type;
     }
 
-    public abstract void CreateUI();
-    public abstract void DeleteMyself();
-
     public bool Equals(Block block)
     {
         if (block == null || blockType != block.BlockType)
+        {
+            return false;
+        } else {
+            return block.X == x && block.Y == y;
+        }
+    }
+
+    public bool EqualsBlockType(Block block)
+    {
+        return block != null && blockType == block.BlockType;
+    }
+
+    public bool EqualsColorType(Block block)
+    {
+        return block != null && colorType == block.ColorType;
+    }
+
+    public bool SameIndex(Block block)
+    {
+        if (block == null)
         {
             return false;
         } else {
@@ -44,6 +63,16 @@ public abstract class Block
         return false;
     }
 
+    public abstract void CreateUI();
+    public abstract void DeleteMyself();
+    public virtual void LowerLifes(){
+        lifes--;   
+    }
+
+    public virtual bool AffectBlock(){
+        return false;
+    }
+
     public virtual void MoveToIndex(int x, int y){
         this.x = x;
         this.y = y;
@@ -59,6 +88,10 @@ public abstract class Block
 
     public bool Breakable(){
         return blockType == BlockType.Lava || blockType == BlockType.Ice;
+    }
+
+    public virtual bool NoLifesLeft(){
+        return lifes == 0;
     }
 
     public int Y
@@ -91,4 +124,7 @@ public abstract class Block
         }
     }
 
+    public GameObject GetLinkedUIGameObject(){
+        return linkedUIGameObject;
+    }
 }

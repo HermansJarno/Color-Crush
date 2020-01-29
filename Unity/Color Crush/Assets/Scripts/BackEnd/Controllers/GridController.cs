@@ -5,14 +5,13 @@ using UnityEngine;
 public class GridController : MonoBehaviour
 {
     Grid grid = new Grid();
-
     Stack<ColorBlock> selectedBlocks = new Stack<ColorBlock>();
     ColorBlock lastSelectedBlock;
 
     private bool deadLock = false;
 
     private void Start() {
-        grid.Initialize(2,3);
+        grid.Initialize(5,5);
     }
 
     public void PassGameObject(GameObject passedGameObject) {
@@ -42,7 +41,7 @@ public class GridController : MonoBehaviour
                 }
             }
         }
-        DebugCurrentSelectedBlocks();
+        //DebugCurrentSelectedBlocks();
     }
 
     private void DebugCurrentSelectedBlocks(){
@@ -72,7 +71,7 @@ public class GridController : MonoBehaviour
     private void UpdateGrid(){
         if(selectedBlocks.Count == 1){
             selectedBlocks.Pop().ToggleSelected();
-        }else{
+        }else if(selectedBlocks.Count > 1) {
             grid.DeleteBlocks(selectedBlocks.ToArray());
         }
         ReleaseSelection();
@@ -88,5 +87,13 @@ public class GridController : MonoBehaviour
         get {
             return deadLock;
         } 
+    }
+
+    public ColorBlock[] GetSelectedBlocks(){
+        return selectedBlocks.ToArray();
+    }
+
+    public Grid GetGrid(){
+        return grid;
     }
 }

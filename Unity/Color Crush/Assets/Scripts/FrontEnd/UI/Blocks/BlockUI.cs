@@ -11,15 +11,13 @@ public abstract class BlockUI : MonoBehaviour
 
     protected Block block;
 
-    public virtual void Initialize(Block block, string spriteType) {
-        this.block = block;
-        image = gameObject.GetComponent<Image>();
-        
-        LoadSprites(spriteType);
-        image.overrideSprite = sprite;
-    }
+    protected float moveSpeed = 6f;
 
-    public abstract void MoveToIndex(int x, int y);
+    protected float moveDelay = 0.1f;
+
+    public abstract void MoveToIndex(int x, int y, int originalY);
+
+    public abstract void CreateIndex(int x, int y);
 
     public void DeleteMyself(){
         GameObject.Destroy(this.gameObject);

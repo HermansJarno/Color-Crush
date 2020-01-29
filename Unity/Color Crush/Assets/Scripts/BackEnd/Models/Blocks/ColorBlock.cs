@@ -28,10 +28,6 @@ public class ColorBlock : Block
         }
     }
 
-    public bool EqualsColorType(ColorBlock block){
-        return block != null && colorType == block.ColorType;
-    }
-
     public override void CreateUI(){
         GameObject column = GameObject.Find("Column_" + x);
         GameObject blockPrefab = Resources.Load("ColorBlock") as GameObject;
@@ -42,6 +38,8 @@ public class ColorBlock : Block
 
         blockUI = instance.GetComponent<ColorBlockUI>();
         blockUI.Initialize(this, colorType.ToString());
+        blockUI.CreateIndex(x,y);
+        linkedUIGameObject = blockUI.gameObject;
     }
 
     public override void DeleteMyself(){
@@ -49,9 +47,13 @@ public class ColorBlock : Block
     }
 
     public override void MoveToIndex(int x, int y){
-        blockUI.MoveToIndex(x, y);
+        blockUI.MoveToIndex(x, y, Y);
         X = x;
         Y = y;
+    }
+
+    public override bool AffectBlock(){
+        return false;
     }
 
     public void ToggleSelected(){

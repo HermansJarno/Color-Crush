@@ -36,16 +36,30 @@ public class ColorBlockUI : BlockUI
         }
     }
 
-    public override void MoveToIndex(int x, int y){
-        //MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
-        //moveBlock.BeginLerp();
+    public override void MoveToIndex(int x, int y, int originalY){
         GameObject column = GameObject.Find("Column_" + x);
 
         transform.SetParent(column.transform, false);
 
 		gameObject.name = string.Format("{0}{1}", x, y);
 
-        transform.localPosition = new Vector3(0, block.BlockOffset * y, 0);
+
+        int steps = originalY - y;
+        MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
+        moveBlock.BeginLerp(transform.localPosition, new Vector3(0, block.BlockOffset * y, 0), moveSpeed, moveDelay * steps, steps);
+    }
+
+    public override void CreateIndex(int x, int y){
+        GameObject column = GameObject.Find("Column_" + x);
+
+        transform.SetParent(column.transform, false);
+
+		gameObject.name = string.Format("{0}{1}", x, y);
+
+        int highestY = FindObjectOfType<GridController>().GetGrid().YLength;
+        int steps = highestY - y;
+        MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
+        moveBlock.BeginLerp(new Vector3(0, block.BlockOffset * highestY, 0), new Vector3(0, block.BlockOffset * y, 0), moveSpeed, 0f, moveDelay * y, steps);
     }
 
     public new ColorBlock GetBlock(){
