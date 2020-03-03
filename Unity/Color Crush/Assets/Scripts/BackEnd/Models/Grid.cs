@@ -12,6 +12,7 @@ public class Grid
     private int[] yEvenOffsets = { 0, 0, -1, 1, -1, -1 };
     private int[] yOddOffsets = { 0, 0, -1, 1, 1, 1};
 	private List<Block> recentDestroyedLavaBlocks;
+	private float delay = 0.1f;
 
     public void Initialize(int xLength, int yLength){
         this.xLength = xLength;
@@ -24,11 +25,13 @@ public class Grid
         {
             for (int y = 0; y < yLength; y++)
             {
-				int rnd = Random.Range(0,4);
-                if(rnd == 2){
-                    blocks[x,y] = new LavaBlock(x,y);
-                }else if(rnd == 3){
+				int rnd = Random.Range(0,5);
+                if(rnd == 3){
+                    blocks[x,y] = new EmptyBlock(x,y);
+                }else if(rnd == 2){
 					blocks[x,y] = new IceBlock(x,y);
+                }else if(rnd == 4){
+					blocks[x,y] = new LavaBlock(x,y);
                 }else{
 					blocks[x,y] = new ColorBlock(x,y, (ColorType)Random.Range(1,7));
 				}
@@ -36,11 +39,14 @@ public class Grid
         }
     }
 
-    public void DeleteBlocks(Block[] blocksToDelete){
+    public int DestroyBlocks(Block[] blocksToDelete){
 		recentDestroyedLavaBlocks = new List<Block>();
+		
+		int numberOfDestroyedBlocks = blocksToDelete.Length;
+
         for (int i = 0; i < blocksToDelete.Length; i++)
         {
-            DestroyNearBlocks(blocksToDelete[i]);
+            numberOfDestroyedBlocks += DestroyNearBlocks(blocksToDelete[i]);
 			blocksToDelete[i].LowerLifes();
 			if(blocksToDelete[i].NoLifesLeft()){
 				blocks[blocksToDelete[i].X, blocksToDelete[i].Y].DeleteMyself();
@@ -48,25 +54,29 @@ public class Grid
 			}
         }
         UpdateGrid();
+		return numberOfDestroyedBlocks;
     }
 
     private void UpdateGrid(){
-        for (int x = 0; x < xLength; x++)
+		for (int x = 0; x < xLength; x++)
         {
+			int nthMove = 0;
             for (int y = 0; y < yLength; y++)
             {
                 if(blocks[x,y] == null) {
                     bool newIndex;
-                    Block block = FindNextBlock(x,y, out newIndex);
+                    Block block = FindNextBlock(x, y, y, out newIndex);
                     if(block != null){
                         blocks[block.X,block.Y] = null;
-                        block.MoveToIndex(x,y);
+                        if(!newIndex) block.MoveToIndex(x, y, nthMove);
                         blocks[x,y] = block;
+						nthMove++;
                     }
                 }
             }
         }
 		UpdateLavaBlocks();
+
         if(!CheckIfMovesLeftInGrid()){
            	if(CheckForPotentialMoveCombination()){
 				Shuffle();
@@ -76,18 +86,18 @@ public class Grid
         }
     }
 
-    private Block FindNextBlock(int x, int y, out bool newIndex)
+    private Block FindNextBlock(int x, int y, int originalY, out bool newIndex)
 	{
 		newIndex = false;
 		if (y == (yLength - 1))
 		{
 			newIndex = true;
-			return new ColorBlock(x,y);
+			return new ColorBlock(x, originalY);
 		}
 		else
 		{
 			y++;
-			if (blocks[x, y] != null)
+			if (!EmptyIndex(blocks[x, y]))
 			{
                 if(blocks[x, y].Moveable()){
                     return blocks[x, y];   
@@ -97,7 +107,7 @@ public class Grid
 			}
 			else
 			{
-				return FindNextBlock(x, y, out newIndex);
+				return FindNextBlock(x, y, originalY, out newIndex);
 			}
 		}
 	}
@@ -120,7 +130,7 @@ public class Grid
 		{
 			for (int y = 0; y < yLength; y++)
 			{
-				if(blocks[x,y] != null && blocks[x,y].Selectable() && CheckIfMovesAroundIndex(blocks[x,y])){
+				if(!EmptyIndex(blocks[x,y]) && blocks[x,y].Selectable() && CheckIfMovesAroundIndex(blocks[x,y])){
 					movesLeftInGrid = true;
 					break;
 				}
@@ -168,16 +178,20 @@ public class Grid
 		return isInTheGrid;
 	}
 
-    private void DestroyNearBlocks(Block block)
+    private int DestroyNearBlocks(Block block)
 	{
+		int numberOfDestroyedBlocks = 0;
 		if ((block.X % 2) == 0) {
-            CheckForBreakableBlocks(block, xOffsets, yEvenOffsets);
+            numberOfDestroyedBlocks += CheckForBreakableBlocks(block, xOffsets, yEvenOffsets);
 		} else {
-			CheckForBreakableBlocks(block, xOffsets, yOddOffsets);
+			numberOfDestroyedBlocks += CheckForBreakableBlocks(block, xOffsets, yOddOffsets);
 		}
+		return numberOfDestroyedBlocks;
 	}
 
-    private void CheckForBreakableBlocks(Block block, int[] xOffsets, int[] yOffsets){
+    private int CheckForBreakableBlocks(Block block, int[] xOffsets, int[] yOffsets){
+		int numberOfDestroyedBlocks = 0;
+
 		for (int i = 0; i < xOffsets.Length; i++)
 		{
 			int x = block.X + xOffsets[i];
@@ -190,11 +204,15 @@ public class Grid
 
 				blocks[x, y].LowerLifes();
 				if(blocks[x, y].NoLifesLeft()){
+					numberOfDestroyedBlocks++;
+
 					blocks[x, y].DeleteMyself();
                 	blocks[x, y] = null;
 				}
 			}
 		}
+
+		return numberOfDestroyedBlocks;
     }
 
 	public List<Block> GetListOfBlocksWithBlockTypeAroundBlock(Block block, BlockType blockType){
@@ -222,7 +240,7 @@ public class Grid
         for (int x = 0; x < xLength; x++) {
 			for (int y = 0; y < yLength; y++)
 			{
-				if (blocks[x,y] != null && blocks[x,y].Selectable()) {
+				if (!EmptyIndex(blocks[x,y]) && blocks[x,y].Selectable()) {
 					Block block = SearchSelectableBlock(x, y);
 					if(block != null && block.Selectable()){
 						Debug.Log(block.BlockType);
@@ -255,8 +273,8 @@ public class Grid
 	{
 		int x = block1.X;
 		int y = block1.Y;
-        block1.MoveToIndex(block2.X, block2.Y);
-        block2.MoveToIndex(x, y);
+        block1.MoveToIndex(block2.X, block2.Y, 1, true);
+        block2.MoveToIndex(x, y, 1, true);
         blocks[block1.X, block1.Y] = block1;
         blocks[block2.X, block2.Y] = block2;
 		Debug.Log("Swapped");
@@ -318,6 +336,10 @@ public class Grid
 		return list;
 	}
 
+	private bool EmptyIndex(Block block){
+		return block == null || block.Empty();
+	}
+
 	public List<Block> RecentDestroyedLavaBlocks{
 		get{
 			return recentDestroyedLavaBlocks;
@@ -333,6 +355,12 @@ public class Grid
     {   
         get{return yLength;} 
     }
+
+	public float MaxDelay{
+		get{
+			return yLength * delay;
+		}
+	}
 
     public Block[,] Blocks{
         get{return blocks;} 

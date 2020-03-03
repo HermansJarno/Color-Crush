@@ -36,17 +36,33 @@ public class ColorBlockUI : BlockUI
         }
     }
 
-    public override void MoveToIndex(int x, int y, int originalY){
+    public override void MoveToIndex(int x, int y, int originalY, int nthMove){
         GameObject column = GameObject.Find("Column_" + x);
 
         transform.SetParent(column.transform, false);
-
-		gameObject.name = string.Format("{0}{1}", x, y);
-
+        transform.SetSiblingIndex(y);
 
         int steps = originalY - y;
         MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
-        moveBlock.BeginLerp(transform.localPosition, new Vector3(0, block.BlockOffset * y, 0), moveSpeed, moveDelay * steps, steps);
+        moveBlock.BeginLerp(transform.localPosition, new Vector3(0, block.BlockOffset * y, 0), moveSpeed, delay * nthMove, steps);
+
+        //transform.SetParent(column.transform, false);
+        //transform.SetSiblingIndex(y);
+
+		gameObject.name = string.Format("{0}{1}", x, y);
+    }
+
+    public void MoveToIndex(int x, int y, int originalY, int nthMove, bool swap){
+        GameObject column = GameObject.Find("Column_" + x);
+
+        transform.SetParent(column.transform, true);
+
+        int steps = originalY - y;
+        MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
+        moveBlock.BeginLerp(transform.localPosition, new Vector3(0, block.BlockOffset * y, 0), moveSpeed, delay * nthMove, steps);
+
+        transform.SetSiblingIndex(y);
+		gameObject.name = string.Format("{0}{1}", x, y);
     }
 
     public override void CreateIndex(int x, int y){
@@ -59,7 +75,7 @@ public class ColorBlockUI : BlockUI
         int highestY = FindObjectOfType<GridController>().GetGrid().YLength;
         int steps = highestY - y;
         MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
-        moveBlock.BeginLerp(new Vector3(0, block.BlockOffset * highestY, 0), new Vector3(0, block.BlockOffset * y, 0), moveSpeed, 0f, moveDelay * y, steps);
+        moveBlock.BeginLerp(new Vector3(0, block.BlockOffset * highestY, 0), new Vector3(0, block.BlockOffset * y, 0), moveSpeed, 0f, delay * y, steps);
     }
 
     public new ColorBlock GetBlock(){

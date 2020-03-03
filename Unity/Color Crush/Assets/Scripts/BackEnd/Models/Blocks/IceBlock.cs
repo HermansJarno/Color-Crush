@@ -34,6 +34,10 @@ public class IceBlock : Block
         blockUI.DeleteMyself();
     }
 
+    public override void DeleteMyself(float delay){
+        blockUI.DeleteMyself(delay);
+    }
+
     public int Lifes{
         get{
             return lifes;

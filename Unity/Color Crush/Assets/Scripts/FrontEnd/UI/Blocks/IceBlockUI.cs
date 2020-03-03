@@ -9,13 +9,14 @@ public class IceBlockUI : BlockUI
 
     public void Initialize(IceBlock block) {
         this.block = block;
+        image = gameObject.GetComponent<Image>();
     }
 
     public void UpdateImage(int lifes){
-
+        image.overrideSprite = Resources.Load<Sprite>("Sprites/Blocks/Ice/ice-block-broken" + lifes);
     }
 
-    public override void MoveToIndex(int x, int y, int originalY){
+    public override void MoveToIndex(int x, int y, int originalY, int nthMove){
         // never moves
     }
 
@@ -29,7 +30,7 @@ public class IceBlockUI : BlockUI
         int highestY = FindObjectOfType<GridController>().GetGrid().YLength;
         int steps = highestY - y;
         MoveBlock moveBlock = gameObject.AddComponent<MoveBlock>();
-        moveBlock.BeginLerp(new Vector3(0, block.BlockOffset * highestY, 0), new Vector3(0, block.BlockOffset * y, 0), moveSpeed, 0f, moveDelay * y, steps);
+        moveBlock.BeginLerp(new Vector3(0, block.BlockOffset * highestY, 0), new Vector3(0, block.BlockOffset * y, 0), moveSpeed, 0f, delay * y, steps);
     }
 
 }

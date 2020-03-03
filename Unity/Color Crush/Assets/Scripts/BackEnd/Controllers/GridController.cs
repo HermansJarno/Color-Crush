@@ -7,17 +7,23 @@ public class GridController : MonoBehaviour
     Grid grid = new Grid();
     Stack<ColorBlock> selectedBlocks = new Stack<ColorBlock>();
     ColorBlock lastSelectedBlock;
-
+    LevelManager levelManager;
+    ScoreController scoreController;
     private bool deadLock = false;
 
     private void Start() {
-        grid.Initialize(5,5);
+        levelManager = FindObjectOfType<LevelManager>();
+        scoreController = FindObjectOfType<ScoreController>();
+
+        grid.Initialize(6,7);
     }
 
     public void PassGameObject(GameObject passedGameObject) {
-        if(passedGameObject.GetComponent<ColorBlockUI>() != null){
-            ColorBlock currentBlock = passedGameObject.GetComponent<ColorBlockUI>().GetBlock();
-            processBlock(currentBlock);
+        if(levelManager.Moves > 0){
+            if(passedGameObject.GetComponent<ColorBlockUI>() != null){
+                ColorBlock currentBlock = passedGameObject.GetComponent<ColorBlockUI>().GetBlock();
+                processBlock(currentBlock);
+            }
         }
     }
 
@@ -41,7 +47,6 @@ public class GridController : MonoBehaviour
                 }
             }
         }
-        //DebugCurrentSelectedBlocks();
     }
 
     private void DebugCurrentSelectedBlocks(){
@@ -72,7 +77,9 @@ public class GridController : MonoBehaviour
         if(selectedBlocks.Count == 1){
             selectedBlocks.Pop().ToggleSelected();
         }else if(selectedBlocks.Count > 1) {
-            grid.DeleteBlocks(selectedBlocks.ToArray());
+            int numberOfDestroyedBlocks = grid.DestroyBlocks(selectedBlocks.ToArray());
+            scoreController.UpdateScore(numberOfDestroyedBlocks);
+            levelManager.LowerMoves();
         }
         ReleaseSelection();
     }

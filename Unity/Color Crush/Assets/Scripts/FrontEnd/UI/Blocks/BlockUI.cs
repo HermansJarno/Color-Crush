@@ -11,16 +11,20 @@ public abstract class BlockUI : MonoBehaviour
 
     protected Block block;
 
-    protected float moveSpeed = 6f;
+    protected float moveSpeed = 4f;
 
-    protected float moveDelay = 0.1f;
+    protected float delay = 0.05f;
 
-    public abstract void MoveToIndex(int x, int y, int originalY);
+    public abstract void MoveToIndex(int x, int y, int originalY, int nthMove);
 
     public abstract void CreateIndex(int x, int y);
 
     public void DeleteMyself(){
         GameObject.Destroy(this.gameObject);
+    }
+
+    public void DeleteMyself(float delay){
+        GameObject.Destroy(this.gameObject, delay);
     }
 
     protected virtual void LoadSprites(string spriteType){
@@ -29,5 +33,11 @@ public abstract class BlockUI : MonoBehaviour
 
     public Block GetBlock(){
         return block;
+    }
+
+    public float Delay{
+        get{
+            return delay;
+        }
     }
 }

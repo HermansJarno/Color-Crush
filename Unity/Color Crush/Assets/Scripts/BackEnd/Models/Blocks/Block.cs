@@ -65,6 +65,8 @@ public abstract class Block
 
     public abstract void CreateUI();
     public abstract void DeleteMyself();
+    public abstract void DeleteMyself(float delay);
+
     public virtual void LowerLifes(){
         lifes--;   
     }
@@ -76,6 +78,20 @@ public abstract class Block
     public virtual void MoveToIndex(int x, int y){
         this.x = x;
         this.y = y;
+    }
+
+    public virtual void MoveToIndex(int x, int y, int nthMove){
+        this.x = x;
+        this.y = y;
+    }
+
+    public virtual void MoveToIndex(int x, int y, int nthMove, bool swap){
+        this.x = x;
+        this.y = y;
+    }
+
+    public bool Empty(){
+        return blockType == BlockType.Empty;
     }
 
     public bool Moveable(){

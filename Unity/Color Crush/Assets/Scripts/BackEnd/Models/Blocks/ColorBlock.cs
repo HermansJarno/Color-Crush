@@ -46,8 +46,18 @@ public class ColorBlock : Block
         blockUI.DeleteMyself();
     }
 
-    public override void MoveToIndex(int x, int y){
-        blockUI.MoveToIndex(x, y, Y);
+    public override void DeleteMyself(float delay){
+        blockUI.DeleteMyself(delay);
+    }
+
+    public override void MoveToIndex(int x, int y, int nthMove){
+        blockUI.MoveToIndex(x, y, Y, nthMove);
+        X = x;
+        Y = y;
+    }
+
+    public override void MoveToIndex(int x, int y, int nthMove, bool swap){
+        blockUI.MoveToIndex(x, y, Y, nthMove, swap);
         X = x;
         Y = y;
     }
