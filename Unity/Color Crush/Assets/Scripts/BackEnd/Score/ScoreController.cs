@@ -15,6 +15,15 @@ public class ScoreController : MonoBehaviour
 
     public void UpdateScore(int numberOfBlocks){
         int score = scoreHandler.Calculate(numberOfBlocks);
+        UpdateUI(score);
+    }
+
+    public void AddScoreForMoves(int moves){
+        int score = scoreHandler.CalculateMovesScore(moves);
+        UpdateUI(score);
+    }
+
+    public void UpdateUI(int score){
         score = levelManager.AddScore(score);
         scoreUI.UpdateScore(score);
     }
