@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 [Serializable]
-public class PlayerData 
+public struct PlayerData 
 {
-    int numberOfLifes;
-    int highestLevel;
-    string playerName;
-
-    // Dictionary of items/boosts
+    public int numberOfLifes;
+    public int currentLevel;
+    public string playerName;
 }

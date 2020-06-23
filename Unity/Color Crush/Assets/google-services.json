@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1046461917421",
+    "firebase_url": "https://color-crush-35ba8.firebaseio.com",
+    "project_id": "color-crush-35ba8",
+    "storage_bucket": "color-crush-35ba8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046461917421:android:b162c89a0da560cf42c4e4",
+        "android_client_info": {
+          "package_name": "com.trigate.ColorCrush"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046461917421-tk0jc75qni94uf98uau4p8jstsq69gh8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0R_jekyu0CwhS1BL_NlliL0ECLoxAyOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046461917421-tk0jc75qni94uf98uau4p8jstsq69gh8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
