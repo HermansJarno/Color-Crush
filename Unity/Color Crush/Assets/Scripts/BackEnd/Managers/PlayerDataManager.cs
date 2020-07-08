@@ -25,6 +25,8 @@ public class PlayerDataManager : MonoBehaviour
     public void UpdatePlayer(PlayerData playerData){
         if(!playerData.Equals(_playerData)){
             _playerData = playerData;
+            Debug.Log($"Player name : {_playerData.playerName}");
+            Debug.Log($"Player's number of lifes : {_playerData.numberOfLifes}");
         }
     }
     

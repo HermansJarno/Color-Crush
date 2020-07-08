@@ -19,11 +19,15 @@ public class LevelManager : MonoBehaviour
         currentLevel = 1;
         level = levelLoader.LoadLevel(currentLevel);
 
-        foreach(var goal in level.LevelGoals){
+        /*foreach(var goal in level.LevelGoals){
             Debug.Log("load key: " + goal.Key + " with value: " + goal.Value);
         }
 
-        Debug.Log(level.ColorGoals.Count);
+        foreach(var goal in level.ColorGoals){
+            Debug.Log("load key: " + goal.Key + " with value: " + goal.Value);
+        }*/
+
+        Debug.Log(level.NumberOfMoves);
 
         SetMoves(level.NumberOfMoves);
     }

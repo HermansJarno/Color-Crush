@@ -54,7 +54,7 @@ public class Level
 
     public int NumberOfMoves {
         get {
-            return index;
+            return numberOfMoves;
         }
     }
 }

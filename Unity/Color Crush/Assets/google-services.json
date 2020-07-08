@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1046461917421-ko9bqf51pgp2jr4bq42cr92crp7ittn5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trigate.ColorCrush",
+            "certificate_hash": "5dc99a065686edafe27800cbf218a63040288cba"
+          }
+        },
+        {
+          "client_id": "1046461917421-v9djfvfbu08ehr3trbr522tpofmrkmqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trigate.ColorCrush",
+            "certificate_hash": "413e760d7091d19a6d35e27bfe50c2474fec3751"
+          }
+        },
+        {
           "client_id": "1046461917421-tk0jc75qni94uf98uau4p8jstsq69gh8.apps.googleusercontent.com",
           "client_type": 3
         }
