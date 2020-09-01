@@ -7,5 +7,4 @@ public struct PlayerData
 {
     public int numberOfLifes;
     public int currentLevel;
-    public string playerName;
 }

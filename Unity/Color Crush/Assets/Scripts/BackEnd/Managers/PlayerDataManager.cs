@@ -8,7 +8,6 @@ public class PlayerDataManager : MonoBehaviour
     private PlayerData _playerData;
 
     public PlayerData PlayerData => _playerData;
-    public string Name => _playerData.playerName;
     public int NumberOfLifes => _playerData.numberOfLifes;
     public int CurrentLevel => _playerData.currentLevel;
 
@@ -18,6 +17,7 @@ public class PlayerDataManager : MonoBehaviour
 
     private void Start() {
         if(_coroutine == null){
+            PlayerPrefs.SetString("uid", "PLAYER_KEY");
             _coroutine = StartCoroutine(LoadPlayer());
         }
     }
@@ -25,7 +25,6 @@ public class PlayerDataManager : MonoBehaviour
     public void UpdatePlayer(PlayerData playerData){
         if(!playerData.Equals(_playerData)){
             _playerData = playerData;
-            Debug.Log($"Player name : {_playerData.playerName}");
             Debug.Log($"Player's number of lifes : {_playerData.numberOfLifes}");
         }
     }

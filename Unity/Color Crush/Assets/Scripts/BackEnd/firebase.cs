@@ -30,7 +30,6 @@ public class firebase : MonoBehaviour
                     }else if(query.IsCompleted) {
                         DataSnapshot snapshot = query.Result;
                         PlayerData playerData = JsonUtility.FromJson<PlayerData>(snapshot.GetRawJsonValue());
-                        Debug.Log(playerData.playerName);
                     }
                 });
             }

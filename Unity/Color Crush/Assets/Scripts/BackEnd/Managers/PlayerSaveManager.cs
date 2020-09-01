@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 public class PlayerSaveManager 
 {
     private const string databaseUrl = "https://color-crush-35ba8.firebaseio.com/";
-    private const string PLAYER_KEY = "PLAYER_KEY";
 
     /*
     public void SavePlayer(PlayerData playerData){
@@ -21,7 +20,7 @@ public class PlayerSaveManager
     public async Task<PlayerData?> LoadPlayer(){
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl(databaseUrl);
 
-        var dataSnapshot = await FirebaseDatabase.DefaultInstance.GetReference("PLAYER_KEY").GetValueAsync();
+        var dataSnapshot = await FirebaseDatabase.DefaultInstance.GetReference(PlayerPrefs.GetString("uid")).GetValueAsync();
         if(!dataSnapshot.Exists){
             return null;
         }
@@ -34,7 +33,7 @@ public class PlayerSaveManager
         bool saveExists = false;
         
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl(databaseUrl);
-        await FirebaseDatabase.DefaultInstance.GetReference("PLAYER_KEY").GetValueAsync().ContinueWith(query => {
+        await FirebaseDatabase.DefaultInstance.GetReference(PlayerPrefs.GetString("uid")).GetValueAsync().ContinueWith(query => {
             saveExists = query.Result.Exists;
             Debug.Log($"Save exists : {saveExists}");
         });
