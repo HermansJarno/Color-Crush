@@ -50,7 +50,7 @@ public class AuthHandler : MonoBehaviour
                             // Do NOT use this value to authenticate with your backend server, if you
                             // have one; use User.TokenAsync() instead.
                             string uid = user.UserId;
-                            text.text = uid + " - " + name + "- email:" + email;
+                            text.text = uid + " - " + name;
                             PlayerPrefs.SetString("uid", uid);
                         } else {
                             text.text = "error: " + user;
@@ -71,5 +71,6 @@ public class AuthHandler : MonoBehaviour
             GoogleSignIn.DefaultInstance.SignOut();
             signIn = null;
         } 
+        text.text = "signed out";
     }
 }
